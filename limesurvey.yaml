@@ -1,0 +1,210 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: limesurvey
+  labels:
+    name: limesurvey
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: mysql
+  namespace: limesurvey
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: mysql
+      from:
+        kind: DockerImage
+        name: 'mysql:5.7'
+      generation: 1
+      importPolicy: {}
+      referencePolicy:
+        type: Source
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: limesurvey
+  namespace: limesurvey
+spec:
+  lookupPolicy:
+    local: false
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: limesurvey-build
+  labels:
+    app: limesurvey
+  namespace: limesurvey
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/bpaskin/LimeSurvey-OCP.git
+    contextDir: .
+  strategy:
+    type: Docker                      
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+      from:
+        kind: ImageStreamTag       
+        namespace: limesurvey
+        name: limesurvey
+  output:
+    to:
+      kind: ImageStreamTag
+      name: limesurvey:latest
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mysql-pvc
+  namespace: limesurvey
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ibmc-file-gold-gid
+  volumeMode: Filesystem
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: limesurvey-params
+  namespace: limesurvey
+data:
+  root-password: cGFzc3dvcmQ=
+  mysql-password: cGFzc3dvcmQ=
+  admin-user: YWRtaW4=
+  admin-password: cGFzc3dvcmQ=
+  admin-email: YWRtaW5AYWRtaW4uY29t
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: limesurvey
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql-57
+        image: image-registry.openshift-image-registry.svc:5000/limesurvey/mysql:mysql
+        args:
+          - "--ignore-db-dir=lost+found"
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: root-password
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: mysql-password
+          - name: MYSQL_DATABASE
+            value: limesurvey
+          - name: MYSQL_USER
+            value: limesurvey
+        ports:
+        - containerPort: 3306
+          name: mysql-listener
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: mysql-lib
+            mountPath: /var/lib/mysql 
+      volumes:
+        - name: mysql-lib
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: limesurvey
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector: 
+    app: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: limesurvey
+  namespace: limesurvey
+  labels:
+    app: limesurvey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: limsurvey
+  template:
+    metadata:
+      labels:
+        app: limesurvey
+    spec:
+      containers:
+      - name: limesurvey
+        image: image-registry.openshift-image-registry.svc:5000/limesurvey/limesurvey:latest
+        env:
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: mysql-password
+          - name: ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: admin-user
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: admin-password
+          - name: ADMIN_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: limesurvey-params
+                key: admin-email
+        ports:
+        - containerPort: 80
+          name: http
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: limesurvey
+  namespace: limesurvey
+  labels:
+    app: limesurvey
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: limesurvey
