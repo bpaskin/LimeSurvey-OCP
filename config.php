@@ -1,12 +1,14 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 return array(
+        $DB_PASSWORD = getenv("MYSQL_PASSWORD");
+
         'components' => array(
                 'db' => array(
                         'connectionString' => 'mysql:host=mysql:3306;dbname=limesurvey;',
                         'emulatePrepare' => true,
                         'username' => 'limesurvey',
-                        'password' => '$_ENV[MYSQL_PASSWORD]',
+                        'password' => '$DB_PASSWORD', 
                         'charset' => 'utf8mb4',
                         'tablePrefix' => 'lime_',
                 ),
