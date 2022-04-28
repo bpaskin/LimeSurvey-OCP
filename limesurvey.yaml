@@ -209,7 +209,7 @@ spec:
                 name: limesurvey-params
                 key: admin-email
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           name: http
         imagePullPolicy: IfNotPresent
 ---
@@ -222,8 +222,8 @@ metadata:
     app: limesurvey
 spec:
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 8080
+      targetPort: 8080
   selector:
     app: limesurvey
 ---
@@ -240,6 +240,6 @@ spec:
     name: limesurvey
     weight: 100
   port:
-    targetPort: 80
+    targetPort: 8080
   wildcardPolicy: None
 
