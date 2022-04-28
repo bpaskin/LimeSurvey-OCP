@@ -48,7 +48,8 @@ RUN curl -sSL "https://github.com/LimeSurvey/LimeSurvey/archive/${version}.tar.g
     && tar xzvf "/tmp/limesurvey.tar.gz" --strip-components=1 -C /var/www/html \
     && rm -f "/tmp/limesurvey.tar.gz" \
     && mkdir -p /var/www/html/tmp/runtime/cache \ 
-    && chown -R "1001:1001" /var/www/html /etc/apache2
+    && chown -R "1001:1001" /var/www/html /etc/apache2 \
+    && chmod -R 777 /var/www/html/tmp/runtime
 
 COPY security.php /var/www/html/application/config/security.php
 COPY config.php /var/www/html/application/config/config.php
