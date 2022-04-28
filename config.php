@@ -1,7 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+$DB_PASSWORD = getenv("MYSQL_PASSWORD");
+
 return array(
-        $DB_PASSWORD = getenv("MYSQL_PASSWORD")
 
         'components' => array(
                 'db' => array(
