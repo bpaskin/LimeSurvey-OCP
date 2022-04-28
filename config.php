@@ -9,7 +9,7 @@ return array(
                         'connectionString' => 'mysql:host=mysql:3306;dbname=limesurvey;',
                         'emulatePrepare' => true,
                         'username' => 'limesurvey',
-                        'password' => '$DB_PASSWORD', 
+                        'password' => "$DB_PASSWORD", 
                         'charset' => 'utf8mb4',
                         'tablePrefix' => 'lime_',
                 ),
