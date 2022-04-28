@@ -27,6 +27,24 @@ spec:
 kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
+  name: php-apache
+  namespace: limesurvey
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: php-apache
+      from:
+        kind: DockerImage
+        name: 'php:8.0-apache'
+      generation: 1
+      importPolicy: {}
+      referencePolicy:
+        type: Source
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
   name: limesurvey
   namespace: limesurvey
 spec:
@@ -53,7 +71,7 @@ spec:
       from:
         kind: ImageStreamTag       
         namespace: limesurvey
-        name: limesurvey
+        name: php-apache:php-apache
   output:
     to:
       kind: ImageStreamTag
@@ -208,3 +226,20 @@ spec:
       targetPort: 80
   selector:
     app: limesurvey
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: limesurvey
+  namespace: limesurvey
+  labels:
+    app: limesurvey
+spec:
+  to:
+    kind: Service
+    name: limesurvey
+    weight: 100
+  port:
+    targetPort: 80
+  wildcardPolicy: None
+
