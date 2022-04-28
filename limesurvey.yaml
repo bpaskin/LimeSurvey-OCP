@@ -144,7 +144,7 @@ spec:
         ports:
         - containerPort: 3306
           name: mysql-listener
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         volumeMounts:
           - name: mysql-lib
             mountPath: /var/lib/mysql 
@@ -211,7 +211,7 @@ spec:
         ports:
         - containerPort: 8080
           name: http
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
