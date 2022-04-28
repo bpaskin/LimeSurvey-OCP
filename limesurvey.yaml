@@ -178,7 +178,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: limsurvey
+      app: limesurvey
   template:
     metadata:
       labels:
