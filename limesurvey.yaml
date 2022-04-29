@@ -76,6 +76,11 @@ spec:
     to:
       kind: ImageStreamTag
       name: limesurvey:latest
+  triggers:
+  - type: ImageChange
+  - type: GitHub
+    github:
+        secret: Altars-0f-Madne33
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
