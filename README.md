@@ -16,12 +16,12 @@ What does it do?
 11. Creates an external Route for LimeSurvey to be accessed
 
 The Secret can be updated with the appropriate userid/password for LimeSurvey and passwords for MySQL access.  They must be in Base64 format.</br>
-root-password: MySQL root password (default: password)</br>
-mysql-password: Password for LimeSurvey (default user: limesurvey, default password: password)</br>
-admin-user: user for LimeSurvey interface (default: admin)</br>
-admin-password: user password for LimeSurvey (default: password)</br>
-admin-email: email address of the amdmin user (default admin@admin.com)</br>
+`root-password`: MySQL root password (default: password)</br>
+`mysql-password`: Password for LimeSurvey (default user: limesurvey, default password: password)</br>
+`admin-user`: user for LimeSurvey interface (default: admin)</br>
+`admin-password`: user password for LimeSurvey (default: password)</br>
+`admin-email`: email address of the amdmin user (default admin@admin.com)</br>
 
 In addition, the PVC should have the correct `storageClassName` for the platform.
 
-The current version of LimeSurvey is 5.3.10+220419 (as of 29/04/2022).  This can be updated in the `Dockerfile` by looking at the release [URL](https://github.com/LimeSurvey/LimeSurvey/tags) and updating the `version` value in the file
+The current version of LimeSurvey is 5.3.10+220419 (as of 29/04/2022).  This can be updated in the `Dockerfile` by looking at the release [URL](https://github.com/LimeSurvey/LimeSurvey/tags) and updating the `version` value in the file.
